@@ -29,6 +29,7 @@ class InsertFiveProductsService {
       let data;
 
       if (error instanceof Error) {
+        console.log("error",error)
         const errorObject = JSON.parse(error.message);
         statusCode = errorObject.statusCode;
         data = errorObject.data;

@@ -5,6 +5,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 const ErrorPage: React.FC = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+
+  console.log("state.status ", state.status);
+
+  // const noAccessToken = () => {
+  //   if (state.status === 400) {
+  //     return "Volte ao partners portal e instale o seu app";
+  //   }
+  // };
   return (
     <Box
       position="absolute"
@@ -18,7 +26,15 @@ const ErrorPage: React.FC = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Text color="danger-interactive">{state?.message}</Text>
+      <>
+        {/* {state.statusCode } */}
+        <Text color="danger-interactive">
+          {state.status === 400
+            ? "Volte ao partners portal e instale o app"
+            : `${state.message}`}
+        </Text>
+        {/* {noAccessToken} */}
+      </>
       <Box marginTop="4">
         <Button as="a" onClick={() => navigate("/")}>
           try again

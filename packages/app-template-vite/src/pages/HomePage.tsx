@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useMutation, useQuery } from "react-query";
 import {
   Card,
   Icon,
@@ -7,18 +8,60 @@ import {
   Button,
   Link,
   Text,
+  Toast,
+  Spinner,
 } from "@nimbus-ds/components";
 import { ExternalLinkIcon, PlusCircleIcon } from "@nimbus-ds/icons";
 import { Page, Layout } from "@nimbus-ds/patterns";
-import { useAuthentication } from "@/hooks";
-import { useProductContext } from "@/components";
+import { useAuthentication, useFetch } from "@/hooks";
 import Loading from "./LoadingPage";
 
 const HomePage: React.FC = () => {
-  const { ACCESS_TOKEN, IS_LOADING } = useAuthentication();
-  const { products, addProducts } = useProductContext();
-  const productsQty = products.length;
-  const add5Products = () => addProducts(5);
+  const { ACCESS_TOKEN, LOADING_AUTHENTICATION } = useAuthentication();
+  const { request } = useFetch();
+
+  const {
+    data: productsQuantity,
+    isLoading: loadingProducts,
+    refetch: refetchProducts,
+  } = useQuery(
+    ["products"],
+    () =>
+      request<{ content: number }>({
+        url: "/products/total",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authentication: `bearer ${ACCESS_TOKEN}`,
+        },
+      }),
+    {
+      enabled: !!ACCESS_TOKEN,
+      retry: false,
+    }
+  );
+
+  const onSubmit = useMutation(
+    () =>
+      request({
+        url: "/products",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authentication: `bearer ${ACCESS_TOKEN}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        refetchProducts();
+      },
+    }
+  );
+
+  const IS_LOADING = useMemo(
+    () => LOADING_AUTHENTICATION || loadingProducts || onSubmit.isLoading,
+    [LOADING_AUTHENTICATION, loadingProducts, onSubmit.isLoading]
+  );
 
   return (
     <>
@@ -75,15 +118,22 @@ const HomePage: React.FC = () => {
                           Total de productos
                         </Text>
                         <Title as="h6" fontSize="h1" color="primary-textLow">
-                          {productsQty}
+                          {productsQuantity && `${productsQuantity?.content}`}
                         </Title>
                       </Box>
                     </Box>
                   </Card.Body>
                   <Card.Footer>
-                    <Button appearance="primary" onClick={add5Products}>
+                    <Button
+                      appearance="primary"
+                      onClick={() => onSubmit.mutate()}
+                      disabled={IS_LOADING}
+                    >
                       <Icon color="currentColor" source={<PlusCircleIcon />} />
                       Crear 5 productos
+                      {IS_LOADING && (
+                        <Spinner color="currentColor" size="small" />
+                      )}
                     </Button>
                   </Card.Footer>
                 </Card>

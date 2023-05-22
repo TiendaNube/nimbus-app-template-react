@@ -11,9 +11,11 @@ const useAuthentication = () => {
   const navigate = useNavigate();
   const query = new URLSearchParams(window.location.search);
   const code = query.get("code");
+  const storage = localStorage.getItem("authentication");
+  const authentication = storage ? JSON.parse(storage as string) as AuthenticationContent : null 
 
   const { request } = useFetch();
-  const { isLoading:loadingToken,isSuccess: successToken, data } = useQuery(
+  const { isLoading:loadingToken } = useQuery(
     ["access-token"],
     () =>
       request<AuthenticationContent>({
@@ -27,26 +29,21 @@ const useAuthentication = () => {
         navigate("/");
       },
       onError: (error:IApiResponse<AuthenticationContent>)=> {
-        localStorage.setItem("authentication","")
-        navigate("/error",{ state:{ message: error?.message } });
+        console.log("error.statusCode",error.statusCode)
+        navigate("/error",{ state:{ message: error?.message, status:error.statusCode } });
       },
+      // enabled:!authentication,
     }
   );
 
 
-  const IS_LOADING = useMemo(()=> loadingToken,[loadingToken]);
+  const LOADING_AUTHENTICATION = useMemo(()=> loadingToken,[loadingToken]);
 
-  const ACCESS_TOKEN = useMemo(()=>{
-    if(!IS_LOADING && successToken ){
-      const authentication = localStorage.getItem("authentication");
-      const content = JSON.parse(authentication as string) as AuthenticationContent
-      return content.access_token
-    }
-  },[IS_LOADING])
+  const ACCESS_TOKEN = useMemo(()=>authentication?.access_token,[authentication?.access_token])
 
   return {
     ACCESS_TOKEN,
-    IS_LOADING,
+    LOADING_AUTHENTICATION,
   };
 };
 

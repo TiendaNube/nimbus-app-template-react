@@ -116,39 +116,6 @@ The API provides the following endpoints:
           "name": {
               "es": "Intelligent Steel Chair"
           },
-          "variants": [
-              {
-                  "id": 640712121,
-                  "image_id": 475446544,
-                  "product_id": 169311292,
-                  "position": 1,
-                  "price": "4361.62",
-                  "compare_at_price": "4361.62",
-                  "promotional_price": null,
-                  "stock_management": true,
-                  "stock": 8,
-                  "weight": "9.000",
-                  "width": "0.00",
-                  "height": "0.00",
-                  "depth": "0.00",
-                  "sku": null,
-                  "values": [],
-                  "barcode": null,
-                  "mpn": null,
-                  "age_group": null,
-                  "gender": null,
-                  "created_at": "2023-05-15T13:33:29+0000",
-                  "updated_at": "2023-05-15T13:33:33+0000",
-                  "inventory_levels": [
-                      {
-                          "id": 224306756,
-                          "variant_id": 640712121,
-                          "location_id": "01GX7R3QEFTXVV95NQY4R9HKYB",
-                          "stock": 8
-                      }
-                  ]
-              }
-          ],
           "images": [
               {
                   "id": 475446544,
